@@ -1,44 +1,16 @@
 import { Blip, Game, Vector3 } from "fivem-js";
-
-import { AirDropProp } from "air-drop-prop";
+import { GetZ } from "utils/get-z";
 import { AirDropAircraft } from "air-drop-aircraft";
-import { TimeSync } from "../shared/time-sync";
-
+import { AirDropProp } from "air-drop-prop";
 import { AIRCRAFT_EVENT_NAME } from "constant/aircraft-event-name.const";
 import { PROP_EVENT_NAME } from "constant/prop-event-name.const";
-import { SCRIPT_NAME } from "../shared/constant/script-name.const";
 
-import { TNetAircraft } from "../shared/types/net-aircraft";
-import { TNetProp } from "../shared/types/net-prop";
-import { TNetMetaData } from "../shared/types/net-meta-data";
-import { TNetPayload } from "../shared/types/net-payload";
-
-const delay = (ms: number) =>
-  new Promise((r) =>
-    setTimeout(() => {
-      r(true);
-    }, ms)
-  );
-
-async function getZ(point: Vector3, iteration = 1): Promise<[boolean, number]> {
-  if (iteration > 25) {
-    ClearFocus();
-    return [false, 0.0];
-  }
-  const [isGround, z] = GetGroundZFor_3dCoord_2(
-    point.x,
-    point.y,
-    point.z,
-    false
-  );
-  if (!isGround) {
-    SetFocusPosAndVel(point.x, point.y, 100.0, 0.0, 0.0, 0.0);
-    await delay(100);
-    return await getZ(point, iteration + 1);
-  }
-  ClearFocus();
-  return [isGround, z];
-}
+import { SCRIPT_NAME } from "@shared/constant/script-name.const";
+import { TimeSync } from "@shared/time-sync";
+import { TNetAircraft } from "@shared/types/net-aircraft";
+import { TNetMetaData } from "@shared/types/net-meta-data";
+import { TNetPayload } from "@shared/types/net-payload";
+import { TNetProp } from "@shared/types/net-prop";
 
 class AirDrop {
   private static airDropInstance: AirDrop;
@@ -57,6 +29,8 @@ class AirDrop {
   >;
 
   private constructor() {
+    this.onTick = this.onTick.bind(this);
+    this.onInterval = this.onInterval.bind(this);
     this.timeSync = TimeSync.instance;
     this.airDrop = new Map();
     onNet(
@@ -102,16 +76,9 @@ class AirDrop {
   }
 
   private run() {
-    this.onTickHandler =
-      this.onTickHandler ||
-      setTick(() => {
-        this.onTick();
-      });
+    this.onTickHandler = this.onTickHandler || setTick(this.onTick);
     this.onIntervalHandler =
-      this.onIntervalHandler ||
-      setInterval(() => {
-        this.onInterval();
-      }, 255);
+      this.onIntervalHandler || setInterval(this.onInterval, 255);
   }
 
   private async addDrop(
@@ -122,7 +89,9 @@ class AirDrop {
   ) {
     if (this.airDrop.has(id)) return;
 
-    const [isGround, z] = await getZ(new Vector3(...prop.startPoint));
+    const [isGround, z] = prop.z
+      ? [true, prop.z]
+      : await GetZ(new Vector3(...prop.startPoint));
     if (!isGround) {
       throw new Error("Failed to find ground for AirDropProp");
     }

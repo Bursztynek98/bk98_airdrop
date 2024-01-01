@@ -1,10 +1,10 @@
 import { Vector3 } from "fivem-js/lib/utils/Vector3";
-import { SCRIPT_NAME } from "../shared/constant/script-name.const";
-import { TimeSync } from "../shared/time-sync";
-import { TNetPayload } from "../shared/types/net-payload";
+import { SCRIPT_NAME } from "@shared/constant/script-name.const";
+import { TimeSync } from "@shared/time-sync";
+import { TNetPayload } from "@shared/types/net-payload";
 import { uuidv4 } from "fivem-js/lib/utils/UUIDV4";
-import { PROP_SPEED } from "../shared/constant/prop-speed.const";
-import { PROP_DISAPPEAR_TIME } from "../shared/constant/prop-disappear-time.const";
+import { PROP_SPEED } from "@shared/constant/prop-speed.const";
+import { PROP_DISAPPEAR_TIME } from "@shared/constant/prop-disappear-time.const";
 
 const exp = global.exports;
 const NetTime = TimeSync.instance;
@@ -31,6 +31,7 @@ function addDrop(
     visibleRadius?: number;
     speed?: number;
     disappearTime?: number;
+    z?: number;
   },
   metaData?: Record<string, any>,
   distance = 6000,
@@ -68,6 +69,7 @@ function addDrop(
       speed: prop.speed,
       visibleRadius: prop.visibleRadius,
       disappearTime: prop.disappearTime,
+      z: prop.z,
     },
     metaData,
   });

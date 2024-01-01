@@ -1,16 +1,16 @@
 import EventEmitter2 from "eventemitter2";
 import { Model, ParticleEffectAsset, Prop, Vector3 } from "fivem-js";
-
 import { DrawChecker } from "utils/draw-checker";
 import { FrameSkipper } from "utils/frame-skipper";
 import { LinearFunctionFromPoints } from "utils/linear-function-from-points";
 
-import { PROP_DISAPPEAR_TIME } from "../shared/constant/prop-disappear-time.const";
+import { PROP_DISAPPEAR_TIME } from "@shared/constant/prop-disappear-time.const";
+import { PROP_SPEED } from "@shared/constant/prop-speed.const";
+
 import { PROP_EVENT_NAME } from "constant/prop-event-name.const";
 import { PROP_FRAME_SKIPPER } from "constant/prop-frame-skipper.const";
-import { PROP_SPEED } from "../shared/constant/prop-speed.const";
-import { PROP_VISIBLE_RADIUS } from "constant/prop-visible-radius.const";
 import { PROP_PARACHUTE_MODEL } from "constant/prop-parachute-model.const";
+import { PROP_VISIBLE_RADIUS } from "constant/prop-visible-radius.const";
 
 export class AirDropProp {
   private drawBreak = false;
