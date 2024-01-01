@@ -1,4 +1,6 @@
 const esbuild = require("esbuild");
+const { aliasPath } = require("esbuild-plugin-alias-path");
+const { nodeExternalsPlugin } = require("esbuild-node-externals");
 
 const production =
   process.argv.findIndex((argItem) => argItem === "--mode=production") >= 0;
@@ -13,6 +15,10 @@ const onRebuild = (context) => {
   };
 };
 
+const alias = {
+  "@shared/*": "./src/shared",
+};
+
 const server = {
   platform: "node",
   target: ["node16"],
@@ -23,11 +29,21 @@ const client = {
   platform: "browser",
   target: ["chrome93"],
   format: "iife",
+  minify: true,
 };
 
 for (const context of ["client", "server"]) {
   esbuild
     .build({
+      plugins: [
+        aliasPath({
+          alias: {
+            ...alias,
+            [`@${context}/*`]: `./src/${context}`,
+          },
+        }),
+        ...(context === "server" ? [nodeExternalsPlugin()] : []),
+      ],
       bundle: true,
       entryPoints: [`src/${context}/${context}.ts`],
       outfile: `dist/${context}.js`,
