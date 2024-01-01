@@ -1,0 +1,21 @@
+{
+  "name": "bk98_airdrop",
+  "version": "1.0.0",
+  "main": "build.js",
+  "author": "BursztyneK98",
+  "license": "MIT",
+  "scripts": {
+    "build": "node build.js --mode=production",
+    "watch": "node build.js"
+  },
+  "devDependencies": {
+    "@citizenfx/client": "latest",
+    "@citizenfx/server": "latest",
+    "@types/node": "^16.3.1",
+    "esbuild": "^0.14.10"
+  },
+  "dependencies": {
+    "eventemitter2": "^6.4.9",
+    "fivem-js": "^1.5.2"
+  }
+}
