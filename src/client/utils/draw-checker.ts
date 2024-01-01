@@ -1,5 +1,5 @@
-import { Vector3 } from "fivem-js";
-import { LinearFunctionFromPoints } from "utils/linear-function-from-points";
+import { Vector3 } from 'fivem-js';
+import { LinearFunctionFromPoints } from 'utils/linear-function-from-points';
 
 export class DrawChecker {
   private readonly linearFunction: LinearFunctionFromPoints;
@@ -12,7 +12,7 @@ export class DrawChecker {
     startNetTime: number,
     private readonly endNetTime: number,
     public readonly visibleRadius: number,
-    private readonly stopOnFinish = false
+    private readonly stopOnFinish = false,
   ) {
     this.offset = endPoint.subtract(startPoint);
     const dx = endPoint.x - startPoint.x;
@@ -21,7 +21,7 @@ export class DrawChecker {
 
     this.linearFunction = new LinearFunctionFromPoints(
       [startNetTime, 0.0],
-      [endNetTime, 1.0]
+      [endNetTime, 1.0],
     );
   }
 
@@ -33,7 +33,7 @@ export class DrawChecker {
   public currentObjectCord(currentNetworkTime: number) {
     return Vector3.add(
       this.startPoint,
-      Vector3.multiply(this.offset, this.netOffset(currentNetworkTime))
+      Vector3.multiply(this.offset, this.netOffset(currentNetworkTime)),
     );
   }
 
@@ -44,12 +44,12 @@ export class DrawChecker {
   public shouldDraw(
     playerCords: Vector3,
     currentNetworkTime: number,
-    extraEndNetTime?: number
+    extraEndNetTime?: number,
   ): [
     shouldDraw: boolean,
     visibleFactor: number,
     currentObjectCord: Vector3,
-    finish: boolean
+    finish: boolean,
   ] {
     const currentObjectCord = this.currentObjectCord(currentNetworkTime);
     const distance = playerCords.distance(currentObjectCord);

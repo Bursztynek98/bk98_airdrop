@@ -1,9 +1,9 @@
-import { Vector3 } from "fivem-js";
-import { Delay } from "./delay";
+import { Vector3 } from 'fivem-js';
+import { Delay } from './delay';
 
 export const GetZ = async (
   point: Vector3,
-  iteration = 1
+  iteration = 1,
 ): Promise<[boolean, number]> => {
   if (iteration > 25) {
     ClearFocus();
@@ -13,7 +13,7 @@ export const GetZ = async (
     point.x,
     point.y,
     point.z,
-    false
+    false,
   );
   if (!isGround) {
     SetFocusPosAndVel(point.x, point.y, 100.0, 0.0, 0.0, 0.0);

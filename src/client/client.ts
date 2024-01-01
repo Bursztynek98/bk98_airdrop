@@ -1,18 +1,18 @@
-import { Blip, Game, Vector3 } from "fivem-js";
-import { AirDropAircraft } from "air-drop-aircraft";
-import { AirDropProp } from "air-drop-prop";
-import { GetZ } from "utils/get-z";
-import { PlayerActive } from "utils/player-active";
+import { Blip, Game, Vector3 } from 'fivem-js';
+import { AirDropAircraft } from 'air-drop-aircraft';
+import { AirDropProp } from 'air-drop-prop';
+import { GetZ } from 'utils/get-z';
+import { PlayerActive } from 'utils/player-active';
 
-import { AIRCRAFT_EVENT_NAME } from "constant/aircraft-event-name.const";
-import { PROP_EVENT_NAME } from "constant/prop-event-name.const";
+import { AIRCRAFT_EVENT_NAME } from 'constant/aircraft-event-name.const';
+import { PROP_EVENT_NAME } from 'constant/prop-event-name.const';
 
-import { SCRIPT_NAME } from "@shared/constant/script-name.const";
-import { TimeSync } from "@shared/time-sync";
-import { TNetAircraft } from "@shared/types/net-aircraft";
-import { TNetMetaData } from "@shared/types/net-meta-data";
-import { TNetPayload } from "@shared/types/net-payload";
-import { TNetProp } from "@shared/types/net-prop";
+import { SCRIPT_NAME } from '@shared/constant/script-name.const';
+import { TimeSync } from '@shared/time-sync';
+import { TNetAircraft } from '@shared/types/net-aircraft';
+import { TNetMetaData } from '@shared/types/net-meta-data';
+import { TNetPayload } from '@shared/types/net-payload';
+import { TNetProp } from '@shared/types/net-prop';
 
 class AirDrop {
   private static airDropInstance: AirDrop;
@@ -36,7 +36,7 @@ class AirDrop {
     this.timeSync = TimeSync.instance;
     this.airDrop = new Map();
 
-    on("onResourceStop", (resourceName: string) => {
+    on('onResourceStop', (resourceName: string) => {
       if (GetCurrentResourceName() != resourceName) {
         return;
       }
@@ -52,7 +52,7 @@ class AirDrop {
         }
         this.timeSync.updateTime();
         this.addDrop(id, aircraft, prop, metaData);
-      }
+      },
     );
 
     onNet(`${SCRIPT_NAME}:REMOVE`, (id: string) => {
@@ -109,7 +109,7 @@ class AirDrop {
     id: string,
     aircraft: TNetAircraft,
     prop: TNetProp,
-    metaData?: TNetMetaData
+    metaData?: TNetMetaData,
   ) {
     if (this.airDrop.has(id)) return;
 
@@ -117,7 +117,7 @@ class AirDrop {
       ? [true, prop.z]
       : await GetZ(new Vector3(...prop.startPoint));
     if (!isGround) {
-      throw new Error("Failed to find ground for AirDropProp");
+      throw new Error('Failed to find ground for AirDropProp');
     }
 
     this.airDrop.set(id, {
@@ -129,7 +129,7 @@ class AirDrop {
         aircraft.startNetTime,
         prop.startNetTime,
         aircraft.visibleRadius,
-        aircraft.pilotModel
+        aircraft.pilotModel,
       ),
       prop: new AirDropProp(
         id,
@@ -139,7 +139,7 @@ class AirDrop {
         prop.startNetTime,
         prop.speed,
         prop.visibleRadius,
-        prop.disappearTime
+        prop.disappearTime,
       ),
       metaData,
     });
@@ -251,5 +251,5 @@ on(
     }
     const b = bl.get(id);
     b.Position = new Vector3(cord[0], cord[1], cord[2]);
-  }
+  },
 );

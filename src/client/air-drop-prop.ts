@@ -1,16 +1,16 @@
-import EventEmitter2 from "eventemitter2";
-import { Model, ParticleEffectAsset, Prop, Vector3 } from "fivem-js";
-import { DrawChecker } from "utils/draw-checker";
-import { FrameSkipper } from "utils/frame-skipper";
-import { LinearFunctionFromPoints } from "utils/linear-function-from-points";
+import EventEmitter2 from 'eventemitter2';
+import { Model, ParticleEffectAsset, Prop, Vector3 } from 'fivem-js';
+import { DrawChecker } from 'utils/draw-checker';
+import { FrameSkipper } from 'utils/frame-skipper';
+import { LinearFunctionFromPoints } from 'utils/linear-function-from-points';
 
-import { PROP_DISAPPEAR_TIME } from "@shared/constant/prop-disappear-time.const";
-import { PROP_SPEED } from "@shared/constant/prop-speed.const";
+import { PROP_DISAPPEAR_TIME } from '@shared/constant/prop-disappear-time.const';
+import { PROP_SPEED } from '@shared/constant/prop-speed.const';
 
-import { PROP_EVENT_NAME } from "constant/prop-event-name.const";
-import { PROP_FRAME_SKIPPER } from "constant/prop-frame-skipper.const";
-import { PROP_PARACHUTE_MODEL } from "constant/prop-parachute-model.const";
-import { PROP_VISIBLE_RADIUS } from "constant/prop-visible-radius.const";
+import { PROP_EVENT_NAME } from 'constant/prop-event-name.const';
+import { PROP_FRAME_SKIPPER } from 'constant/prop-frame-skipper.const';
+import { PROP_PARACHUTE_MODEL } from 'constant/prop-parachute-model.const';
+import { PROP_VISIBLE_RADIUS } from 'constant/prop-visible-radius.const';
 
 export class AirDropProp {
   private drawBreak = false;
@@ -44,7 +44,7 @@ export class AirDropProp {
     startNetTime: number,
     speed?: number,
     private readonly visibleRadius?: number,
-    private readonly disappearTime?: number
+    private readonly disappearTime?: number,
   ) {
     if (!this.visibleRadius) this.visibleRadius = PROP_VISIBLE_RADIUS;
     if (!this.disappearTime) this.disappearTime = PROP_DISAPPEAR_TIME;
@@ -59,18 +59,18 @@ export class AirDropProp {
       startNetTime,
       endNetTime,
       this.visibleRadius,
-      true
+      true,
     );
     this.linearFunction = new LinearFunctionFromPoints(
       [0.0, 0],
-      [1.0, PROP_FRAME_SKIPPER]
+      [1.0, PROP_FRAME_SKIPPER],
     );
 
     this.eventEmitter = new EventEmitter2();
     this.frameSkipper = new FrameSkipper(0);
     this.objectModel = new Model(objectModel);
     this.parachuteModel = new Model(PROP_PARACHUTE_MODEL);
-    this.particleEffectAsset = new ParticleEffectAsset("core");
+    this.particleEffectAsset = new ParticleEffectAsset('core');
   }
 
   private get objectHandlerExist() {
@@ -118,8 +118,8 @@ export class AirDropProp {
         this.minZ(position.z),
         false,
         false,
-        false
-      )
+        false,
+      ),
     );
     this.objectHandler.IsPositionFrozen = true;
     this.objectHandler.LodDistance = this.visibleRadius;
@@ -134,14 +134,14 @@ export class AirDropProp {
           this.minZ(position.z),
           false,
           false,
-          false
-        )
+          false,
+        ),
       );
 
       this.parachuteHandler.attachTo(
         this.objectHandler,
         new Vector3(0.0, 0.0, 0.1),
-        new Vector3(0.0, 0.0, 0.0)
+        new Vector3(0.0, 0.0, 0.0),
       );
       this.parachuteHandler.Velocity = new Vector3(0.0, 0.0, -0.2);
       this.parachuteHandler.LodDistance = this.visibleRadius;
@@ -149,11 +149,11 @@ export class AirDropProp {
     }
     this.setPosition(position);
     this.particleEffectAsset.startNonLoopedOnEntity(
-      "weap_heist_flare_trail",
+      'weap_heist_flare_trail',
       this.objectHandler,
       undefined,
       undefined,
-      1.0
+      1.0,
     );
     this.eventEmitter.emit(PROP_EVENT_NAME.SPAWN, {
       id: this.id,
@@ -181,11 +181,11 @@ export class AirDropProp {
       if (!this.objectHandlerExist) return;
       if (this.frameSkipper.shouldSkipFrame) return;
       this.drawBreak = this.setPosition(
-        this.drawChecker.currentObjectCord(currentNetworkTime)
+        this.drawChecker.currentObjectCord(currentNetworkTime),
       );
     } catch (e) {
       throw new Error(
-        `Failed exec draw for AirDropProp (${this.id}) error: ${e.message}`
+        `Failed exec draw for AirDropProp (${this.id}) error: ${e.message}`,
       );
     }
   }
@@ -198,7 +198,7 @@ export class AirDropProp {
         this.drawChecker.shouldDraw(
           playerCords,
           currentNetworkTime,
-          this.disappearTime
+          this.disappearTime,
         );
 
       if (
@@ -222,7 +222,7 @@ export class AirDropProp {
       return finish;
     } catch (e) {
       throw new Error(
-        `Failed exec shouldDraw for AirDropProp (${this.id}) error: ${e.message}`
+        `Failed exec shouldDraw for AirDropProp (${this.id}) error: ${e.message}`,
       );
     }
   }

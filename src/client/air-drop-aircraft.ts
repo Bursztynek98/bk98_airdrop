@@ -1,14 +1,14 @@
-import EventEmitter2 from "eventemitter2";
-import { Model, Vector3 } from "fivem-js";
+import EventEmitter2 from 'eventemitter2';
+import { Model, Vector3 } from 'fivem-js';
 
-import { DrawChecker } from "utils/draw-checker";
-import { FrameSkipper } from "utils/frame-skipper";
-import { LinearFunctionFromPoints } from "utils/linear-function-from-points";
+import { DrawChecker } from 'utils/draw-checker';
+import { FrameSkipper } from 'utils/frame-skipper';
+import { LinearFunctionFromPoints } from 'utils/linear-function-from-points';
 
-import { AIRCRAFT_EVENT_NAME } from "constant/aircraft-event-name.const";
-import { AIRCRAFT_FRAME_SKIPPER } from "constant/aircraft-frame-skipper.const";
-import { AIRCRAFT_PILOT_MODEL } from "constant/aircraft-pilot-model.const";
-import { AIRCRAFT_VISIBLE_RADIUS } from "constant/aircraft-visible-radius.const";
+import { AIRCRAFT_EVENT_NAME } from 'constant/aircraft-event-name.const';
+import { AIRCRAFT_FRAME_SKIPPER } from 'constant/aircraft-frame-skipper.const';
+import { AIRCRAFT_PILOT_MODEL } from 'constant/aircraft-pilot-model.const';
+import { AIRCRAFT_VISIBLE_RADIUS } from 'constant/aircraft-visible-radius.const';
 
 export class AirDropAircraft {
   private readonly drawChecker: DrawChecker;
@@ -40,7 +40,7 @@ export class AirDropAircraft {
     startNetTime: number,
     endNetTime: number,
     private readonly visibleRadius?: number,
-    pilotModel?: string | number
+    pilotModel?: string | number,
   ) {
     if (!this.visibleRadius) this.visibleRadius = AIRCRAFT_VISIBLE_RADIUS;
 
@@ -53,11 +53,11 @@ export class AirDropAircraft {
       endPoint,
       startNetTime,
       endNetTime,
-      this.visibleRadius
+      this.visibleRadius,
     );
     this.linearFunction = new LinearFunctionFromPoints(
       [0.0, 0],
-      [1.0, AIRCRAFT_FRAME_SKIPPER]
+      [1.0, AIRCRAFT_FRAME_SKIPPER],
     );
   }
 
@@ -74,7 +74,7 @@ export class AirDropAircraft {
       true,
       true,
       true,
-      false
+      false,
     );
     rotation && SetEntityHeading(this.objectHandler, rotation);
   }
@@ -94,7 +94,7 @@ export class AirDropAircraft {
       position.z,
       rotation || 90,
       false,
-      false
+      false,
     );
     SetEntityInvincible(this.objectHandler, true);
     SetVehicleDoorsLocked(this.objectHandler, 2);
@@ -111,7 +111,7 @@ export class AirDropAircraft {
       this.pilotModel.Hash,
       -1,
       false,
-      false
+      false,
     );
     SetEntityInvincible(this.pilotHandler, true);
     SetBlockingOfNonTemporaryEvents(this.pilotHandler, true);
@@ -128,7 +128,7 @@ export class AirDropAircraft {
       this.objectModel.Hash,
       262144,
       15.0,
-      -1.0
+      -1.0,
     );
 
     this.eventEmitter.emit(AIRCRAFT_EVENT_NAME.SPAWN, {
@@ -156,7 +156,7 @@ export class AirDropAircraft {
         this.objectModel.Hash,
         262144,
         15.0,
-        -1.0
+        -1.0,
       );
       setTimeout(() => {
         this?.delete && this.delete();
@@ -179,11 +179,11 @@ export class AirDropAircraft {
       if (this.frameSkipper.shouldSkipFrame) return;
       this.setPosition(
         this.drawChecker.currentObjectCord(currentNetworkTime),
-        this.drawChecker.heading
+        this.drawChecker.heading,
       );
     } catch (e) {
       throw new Error(
-        `Failed exec draw for AirDropAircraft (${this.id}) error: ${e.message}`
+        `Failed exec draw for AirDropAircraft (${this.id}) error: ${e.message}`,
       );
     }
   }
@@ -209,7 +209,7 @@ export class AirDropAircraft {
       return finish;
     } catch (e) {
       throw new Error(
-        `Failed exec shouldDraw for AirDropAircraft (${this.id}) error: ${e.message}`
+        `Failed exec shouldDraw for AirDropAircraft (${this.id}) error: ${e.message}`,
       );
     }
   }

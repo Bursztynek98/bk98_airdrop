@@ -1,8 +1,8 @@
-import { uuidv4 } from "fivem-js/lib/utils/UUIDV4";
-import { SCRIPT_NAME, SCRIPT_PREFIX } from "./constant/script-name.const";
+import { uuidv4 } from 'fivem-js/lib/utils/UUIDV4';
+import { SCRIPT_NAME, SCRIPT_PREFIX } from './constant/script-name.const';
 
-const SYNC = `${SCRIPT_PREFIX}:${"SYNC"}`;
-const TIME = `${SCRIPT_PREFIX}:${"TIME"}`;
+const SYNC = `${SCRIPT_PREFIX}:${'SYNC'}`;
+const TIME = `${SCRIPT_PREFIX}:${'TIME'}`;
 
 export class TimeSync {
   private static timeSync: TimeSync;
@@ -27,14 +27,14 @@ export class TimeSync {
     this.startSync();
 
     if (this.isServer) {
-      on("onResourceStop", (resourceName: string) => {
+      on('onResourceStop', (resourceName: string) => {
         if (GetCurrentResourceName() != resourceName) {
           return;
         }
         if (GlobalState[SYNC] == this.id) {
           GlobalState.set(SYNC, null, false);
           console.log(
-            `[${SCRIPT_NAME}] [${SYNC}] Time Sync Stop instance (${this.id})`
+            `[${SCRIPT_NAME}] [${SYNC}] Time Sync Stop instance (${this.id})`,
           );
         }
       });
@@ -54,8 +54,8 @@ export class TimeSync {
     this.intervalHandler = setInterval(this.updateTime, 5000);
     console.log(
       `[${SCRIPT_NAME}] [${SYNC}] Time Sync Started${
-        this.isServer ? ` instance (${GlobalState[SYNC]})` : ""
-      }`
+        this.isServer ? ` instance (${GlobalState[SYNC]})` : ''
+      }`,
     );
   }
 
@@ -72,7 +72,7 @@ export class TimeSync {
       if (GlobalState[SYNC] != this.id) {
         clearInterval(this.intervalHandler);
         console.log(
-          `[${SCRIPT_NAME}] [${SYNC}] Time Sync Stop, Detected master instance (${GlobalState[SYNC]})`
+          `[${SCRIPT_NAME}] [${SYNC}] Time Sync Stop, Detected master instance (${GlobalState[SYNC]})`,
         );
       }
     } else {
