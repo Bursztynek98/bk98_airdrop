@@ -5,4 +5,5 @@ export type TNetProp = {
   speed?: number;
   visibleRadius?: number;
   disappearTime?: number;
+  z?: number;
 };
