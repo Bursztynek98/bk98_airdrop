@@ -12,13 +12,19 @@ import { AIRCRAFT_VISIBLE_RADIUS } from 'constant/aircraft-visible-radius.const'
 
 export class AirDropAircraft {
   private readonly drawChecker: DrawChecker;
+
   private readonly eventEmitter: EventEmitter2;
+
   private readonly frameSkipper: FrameSkipper;
+
   private readonly linearFunction: LinearFunctionFromPoints;
+
   private readonly objectModel: Model;
+
   private readonly pilotModel: Model;
 
   private objectHandler: number;
+
   private pilotHandler: number;
 
   /**
@@ -81,7 +87,8 @@ export class AirDropAircraft {
 
   private async spawn(position: Vector3, rotation?: number) {
     if (this.objectHandlerExist) {
-      return this.setPosition(position, rotation);
+      this.setPosition(position, rotation);
+      return;
     }
 
     await this.objectModel.request(1000);

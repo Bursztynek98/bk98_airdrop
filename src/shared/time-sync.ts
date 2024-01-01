@@ -1,17 +1,21 @@
 import { uuidv4 } from 'fivem-js/lib/utils/UUIDV4';
-import { SCRIPT_NAME, SCRIPT_PREFIX } from './constant/script-name.const';
+import { SCRIPT_PREFIX } from './constant/script-name.const';
+import { Logger } from './logger';
 
 const SYNC = `${SCRIPT_PREFIX}:${'SYNC'}`;
 const TIME = `${SCRIPT_PREFIX}:${'TIME'}`;
 
 export class TimeSync {
   private static timeSync: TimeSync;
+
   public readonly id: string;
 
   private readonly isServer: boolean;
+
   private intervalHandler: CitizenTimer;
 
   private lastServerTime: number;
+
   private lastClientTime: number;
 
   private constructor() {
@@ -28,19 +32,17 @@ export class TimeSync {
 
     if (this.isServer) {
       on('onResourceStop', (resourceName: string) => {
-        if (GetCurrentResourceName() != resourceName) {
+        if (GetCurrentResourceName() !== resourceName) {
           return;
         }
-        if (GlobalState[SYNC] == this.id) {
+        if (GlobalState[SYNC] === this.id) {
           GlobalState.set(SYNC, null, false);
-          console.log(
-            `[${SCRIPT_NAME}] [${SYNC}] Time Sync Stop instance (${this.id})`,
-          );
+          Logger.log(`[${SYNC}] Time Sync Stop instance (${this.id})`);
         }
       });
       AddStateBagChangeHandler(SYNC, null, () => {
         const prevValue = GlobalState[SYNC];
-        if (prevValue == this.id) {
+        if (prevValue === this.id) {
           return;
         }
         GlobalState.set(SYNC, this.id, false);
@@ -52,8 +54,8 @@ export class TimeSync {
   private startSync() {
     this.updateTime();
     this.intervalHandler = setInterval(this.updateTime, 5000);
-    console.log(
-      `[${SCRIPT_NAME}] [${SYNC}] Time Sync Started${
+    Logger.log(
+      `[${SYNC}] Time Sync Started${
         this.isServer ? ` instance (${GlobalState[SYNC]})` : ''
       }`,
     );
@@ -69,10 +71,10 @@ export class TimeSync {
   public updateTime() {
     if (this.isServer) {
       GlobalState.set(TIME, GetGameTimer(), true);
-      if (GlobalState[SYNC] != this.id) {
+      if (GlobalState[SYNC] !== this.id) {
         clearInterval(this.intervalHandler);
-        console.log(
-          `[${SCRIPT_NAME}] [${SYNC}] Time Sync Stop, Detected master instance (${GlobalState[SYNC]})`,
+        Logger.log(
+          `[${SYNC}] Time Sync Stop, Detected master instance (${GlobalState[SYNC]})`,
         );
       }
     } else {
@@ -84,8 +86,7 @@ export class TimeSync {
   public get networkTime(): number {
     if (this.isServer) {
       return GetGameTimer();
-    } else {
-      return this.lastServerTime + (GetNetworkTime() - this.lastClientTime);
     }
+    return this.lastServerTime + (GetNetworkTime() - this.lastClientTime);
   }
 }

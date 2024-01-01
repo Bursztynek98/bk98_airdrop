@@ -14,16 +14,25 @@ import { PROP_VISIBLE_RADIUS } from 'constant/prop-visible-radius.const';
 
 export class AirDropProp {
   private drawBreak = false;
+
   private readonly drawChecker: DrawChecker;
+
   private readonly endPoint: Vector3;
+
   private readonly eventEmitter: EventEmitter2;
+
   private readonly frameSkipper: FrameSkipper;
+
   private readonly linearFunction: LinearFunctionFromPoints;
+
   private readonly objectModel: Model;
+
   private readonly parachuteModel: Model;
+
   private readonly particleEffectAsset: ParticleEffectAsset;
 
   private objectHandler: Prop;
+
   private parachuteHandler: Prop;
 
   /**
@@ -92,6 +101,7 @@ export class AirDropProp {
       return true;
     }
     this.objectHandler.Position = position;
+    return false;
   }
 
   private async spawn(position: Vector3) {
@@ -160,6 +170,7 @@ export class AirDropProp {
       object: this.objectHandler.Handle,
       parachute: this.parachuteHandler?.Handle,
     });
+    return null;
   }
 
   public on(event: string, callback: (...args: any[]) => void) {
@@ -193,7 +204,7 @@ export class AirDropProp {
   // Call every second
   public async shouldDraw(playerCords: Vector3, currentNetworkTime: number) {
     try {
-      if (this.drawChecker.netOffset(currentNetworkTime) < 0.0) return;
+      if (this.drawChecker.netOffset(currentNetworkTime) < 0.0) return null;
       const [shouldDraw, visibleFactor, currentObjectCord, finish] =
         this.drawChecker.shouldDraw(
           playerCords,

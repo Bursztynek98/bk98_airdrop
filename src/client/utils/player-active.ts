@@ -1,4 +1,4 @@
-export const PlayerActive = async () => {
+export async function PlayerActive() {
   return new Promise((resolve) => {
     const t = setInterval(() => {
       if (NetworkIsSessionStarted() && NetworkIsPlayerActive(PlayerId())) {
@@ -6,7 +6,6 @@ export const PlayerActive = async () => {
         Wait(1000);
         resolve(true);
       }
-      return;
     }, 150);
   });
-};
+}

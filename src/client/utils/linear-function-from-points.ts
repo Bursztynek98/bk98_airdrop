@@ -2,6 +2,7 @@ export type Vec2 = [number, number];
 
 export class LinearFunctionFromPoints {
   private m: number;
+
   private b: number;
 
   /**

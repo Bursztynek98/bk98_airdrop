@@ -9,6 +9,7 @@ import { PROP_EVENT_NAME } from 'constant/prop-event-name.const';
 
 import { SCRIPT_NAME } from '@shared/constant/script-name.const';
 import { TimeSync } from '@shared/time-sync';
+import { Logger } from '@shared/logger';
 import { TNetAircraft } from '@shared/types/net-aircraft';
 import { TNetMetaData } from '@shared/types/net-meta-data';
 import { TNetPayload } from '@shared/types/net-payload';
@@ -18,9 +19,11 @@ class AirDrop {
   private static airDropInstance: AirDrop;
 
   private onTickHandler: number;
+
   private onIntervalHandler: CitizenTimer;
 
   private readonly timeSync: TimeSync;
+
   private readonly airDrop: Map<
     string,
     {
@@ -37,10 +40,10 @@ class AirDrop {
     this.airDrop = new Map();
 
     on('onResourceStop', (resourceName: string) => {
-      if (GetCurrentResourceName() != resourceName) {
+      if (GetCurrentResourceName() !== resourceName) {
         return;
       }
-      console.log(`[${SCRIPT_NAME}] Client Resource Stop`);
+      Logger.log(`Client Resource Stop`);
       this.stop();
     });
 
@@ -84,7 +87,7 @@ class AirDrop {
   public stop() {
     this.onTickHandler && clearTick(this.onTickHandler);
     this.onIntervalHandler && clearInterval(this.onIntervalHandler);
-    if (this.airDrop.size == 0) return;
+    if (this.airDrop.size === 0) return;
     this.airDrop.forEach((value) => {
       value.aircraft?.delete();
       value.prop?.delete();
@@ -172,7 +175,7 @@ class AirDrop {
   }
 
   private onTick() {
-    if (this.airDrop.size == 0) {
+    if (this.airDrop.size === 0) {
       clearTick(this.onTickHandler);
       this.onTickHandler = null;
       return;
@@ -185,12 +188,12 @@ class AirDrop {
         value.prop?.draw(netTime);
       });
     } catch (e) {
-      console.log(`onTick error: ${e}`);
+      Logger.warn(`onTick error: ${e}`);
     }
   }
 
   private async onInterval() {
-    if (this.airDrop.size == 0) {
+    if (this.airDrop.size === 0) {
       clearInterval(this.onIntervalHandler);
       this.onIntervalHandler = null;
       return;
@@ -199,21 +202,30 @@ class AirDrop {
       const netTime = this.timeSync.networkTime;
       const position = Game.PlayerPed.Position;
 
+      const asyncFn = [];
+
+      // eslint-disable-next-line no-restricted-syntax
       for (const [id, value] of this.airDrop) {
-        if (await value.aircraft?.shouldDraw(position, netTime)) {
-          value.aircraft?.flyToSky();
-          value.aircraft = null;
-        }
+        asyncFn.push(async () => {
+          if (await value.aircraft?.shouldDraw(position, netTime)) {
+            value.aircraft?.flyToSky();
+            value.aircraft = null;
+          }
 
-        if (await value.prop?.shouldDraw(position, netTime)) {
-          value.prop?.delete();
-          value.prop = null;
-        }
+          if (await value.prop?.shouldDraw(position, netTime)) {
+            value.prop?.delete();
+            value.prop = null;
+          }
 
-        if (!value.aircraft && !value.prop) this.airDrop.delete(id);
+          if (!value.aircraft && !value.prop) this.airDrop.delete(id);
+        });
       }
+
+      await Promise.all(asyncFn).catch((e) => {
+        throw e;
+      });
     } catch (e) {
-      console.log(`setInterval error: ${e}`);
+      Logger.warn(`setInterval error: ${e}`);
     }
   }
 }
@@ -222,7 +234,7 @@ async function boot() {
   await PlayerActive();
   AirDrop.instance();
 
-  console.log(`[${SCRIPT_NAME}] Client Resource Started`);
+  Logger.log(`Client Resource Started`);
 }
 
 boot();
@@ -244,12 +256,12 @@ on(
   `${SCRIPT_NAME}:AIRCRAFT_EVENT_NAME:${AIRCRAFT_EVENT_NAME.UPDATE_POSITION}`,
   ({ id, cord }: { id: string; cord: [number, number, number] }) => {
     if (!bl.has(id)) {
-      const _b = new Blip(AddBlipForCoord(cord[0], cord[1], cord[2]));
-      bl.set(id, _b);
-      _b.Name = id;
+      const blip = new Blip(AddBlipForCoord(cord[0], cord[1], cord[2]));
+      bl.set(id, blip);
+      blip.Name = id;
       return;
     }
-    const b = bl.get(id);
-    b.Position = new Vector3(cord[0], cord[1], cord[2]);
+    const blip = bl.get(id);
+    blip.Position = new Vector3(cord[0], cord[1], cord[2]);
   },
 );

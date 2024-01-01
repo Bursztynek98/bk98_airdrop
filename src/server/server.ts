@@ -5,13 +5,14 @@ import { TNetPayload } from '@shared/types/net-payload';
 import { uuidv4 } from 'fivem-js/lib/utils/UUIDV4';
 import { PROP_SPEED } from '@shared/constant/prop-speed.const';
 import { PROP_DISAPPEAR_TIME } from '@shared/constant/prop-disappear-time.const';
+import { Logger } from '@shared/logger';
 
 const exp = global.exports;
-const NetTime = TimeSync.instance;
+const netTimeInstance = TimeSync.instance;
 const airDrop = new Map<string, Omit<TNetPayload, 'id'>>();
 
 onNet(`${SCRIPT_NAME}:SYNC`, () => {
-  const source = global.source;
+  const { source } = global;
   emitNet(
     `${SCRIPT_NAME}:SYNC`,
     source,
@@ -38,7 +39,7 @@ function addDrop(
   height = 300.0,
   heading?: number,
 ) {
-  const currentNetTime = NetTime.networkTime;
+  const currentNetTime = netTimeInstance.networkTime;
   const flyTime = 1000 * (distance / (350 / 3.6));
   const netTime = currentNetTime + flyTime;
   const finnishTimeout =
@@ -92,12 +93,12 @@ function removeDrop(id: string) {
 }
 exp(`${SCRIPT_NAME}:REMOVE_DROP`, removeDrop);
 
-console.log(`[${SCRIPT_NAME}] Server Resource Started`);
+Logger.log(`[${SCRIPT_NAME}] Server Resource Started`);
 
 RegisterCommand(
   'c_airdrop',
-  async (source: string, args: string[]) => {
-    const [x, y, z] = GetEntityCoords(GetPlayerPed(source));
+  async (source: string) => {
+    const [x, y] = GetEntityCoords(GetPlayerPed(source));
 
     const id = addDrop(
       [x, y],
@@ -109,14 +110,14 @@ RegisterCommand(
       },
       { siema: 123 },
     );
-    console.log({ id });
+    Logger.log({ id });
   },
   false,
 );
 
 RegisterCommand(
   's_airdrop',
-  async (source: string, args: string[]) => {
+  async () => {
     const id = addDrop(
       [0.0, 0.0],
       {
@@ -127,7 +128,7 @@ RegisterCommand(
       },
       { siema: 123 },
     );
-    console.log({ id });
+    Logger.log({ id });
   },
   false,
 );

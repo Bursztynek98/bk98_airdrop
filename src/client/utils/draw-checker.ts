@@ -3,7 +3,9 @@ import { LinearFunctionFromPoints } from 'utils/linear-function-from-points';
 
 export class DrawChecker {
   private readonly linearFunction: LinearFunctionFromPoints;
+
   private readonly offset: Vector3;
+
   public readonly heading: number;
 
   constructor(
