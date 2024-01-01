@@ -1,7 +1,9 @@
 import { Blip, Game, Vector3 } from "fivem-js";
-import { GetZ } from "utils/get-z";
 import { AirDropAircraft } from "air-drop-aircraft";
 import { AirDropProp } from "air-drop-prop";
+import { GetZ } from "utils/get-z";
+import { PlayerActive } from "utils/player-active";
+
 import { AIRCRAFT_EVENT_NAME } from "constant/aircraft-event-name.const";
 import { PROP_EVENT_NAME } from "constant/prop-event-name.const";
 
@@ -194,21 +196,8 @@ class AirDrop {
   }
 }
 
-const playerActive = async () => {
-  return new Promise((resolve) => {
-    const t = setInterval(() => {
-      if (NetworkIsSessionStarted() && NetworkIsPlayerActive(PlayerId())) {
-        clearInterval(t);
-        Wait(1000);
-        resolve(true);
-      }
-      return;
-    }, 150);
-  });
-};
-
 async function boot() {
-  await playerActive();
+  await PlayerActive();
   AirDrop.instance;
 
   console.log(`[${SCRIPT_NAME}] Client Resource Started`);
