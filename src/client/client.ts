@@ -35,6 +35,15 @@ class AirDrop {
     this.onInterval = this.onInterval.bind(this);
     this.timeSync = TimeSync.instance;
     this.airDrop = new Map();
+
+    on("onResourceStop", (resourceName: string) => {
+      if (GetCurrentResourceName() != resourceName) {
+        return;
+      }
+      console.log(`[${SCRIPT_NAME}] Client Resource Stop`);
+      this.stop();
+    });
+
     onNet(
       `${SCRIPT_NAME}:CREATE`,
       ({ id, aircraft, prop, metaData }: TNetPayload) => {
@@ -65,7 +74,7 @@ class AirDrop {
     emitNet(`${SCRIPT_NAME}:SYNC`);
   }
 
-  public static get instance(): AirDrop {
+  public static instance(): AirDrop {
     if (!AirDrop.airDropInstance) {
       AirDrop.airDropInstance = new AirDrop();
     }
@@ -211,14 +220,7 @@ class AirDrop {
 
 async function boot() {
   await PlayerActive();
-  const instance = AirDrop.instance;
-  on("onResourceStop", (resourceName: string) => {
-    if (GetCurrentResourceName() != resourceName) {
-      return;
-    }
-    console.log(`[${SCRIPT_NAME}] Client Resource Stop`);
-    instance?.stop();
-  });
+  AirDrop.instance();
 
   console.log(`[${SCRIPT_NAME}] Client Resource Started`);
 }
