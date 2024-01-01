@@ -72,15 +72,28 @@ class AirDrop {
     return AirDrop.airDropInstance;
   }
 
+  public stop() {
+    this.onTickHandler && clearTick(this.onTickHandler);
+    this.onIntervalHandler && clearInterval(this.onIntervalHandler);
+    if (this.airDrop.size == 0) return;
+    this.airDrop.forEach((value) => {
+      value.aircraft?.delete();
+      value.prop?.delete();
+    });
+  }
+
   private async emit(eventName: string, id: string, args: Record<string, any>) {
     const metaData = this.airDrop.get(id)?.metaData;
     TriggerEvent(`${SCRIPT_NAME}:${eventName}`, { ...args, id, metaData });
   }
 
   private run() {
-    this.onTickHandler = this.onTickHandler || setTick(this.onTick);
-    this.onIntervalHandler =
-      this.onIntervalHandler || setInterval(this.onInterval, 255);
+    this.onTickHandler = this.onTickHandler
+      ? this.onTickHandler
+      : setTick(this.onTick);
+    this.onIntervalHandler = this.onIntervalHandler
+      ? this.onIntervalHandler
+      : setInterval(this.onInterval, 500);
   }
 
   private async addDrop(
@@ -198,7 +211,14 @@ class AirDrop {
 
 async function boot() {
   await PlayerActive();
-  AirDrop.instance;
+  const instance = AirDrop.instance;
+  on("onResourceStop", (resourceName: string) => {
+    if (GetCurrentResourceName() != resourceName) {
+      return;
+    }
+    console.log(`[${SCRIPT_NAME}] Client Resource Stop`);
+    instance?.stop();
+  });
 
   console.log(`[${SCRIPT_NAME}] Client Resource Started`);
 }
