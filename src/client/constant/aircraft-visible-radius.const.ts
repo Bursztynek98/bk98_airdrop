@@ -1,0 +1,1 @@
+export const AIRCRAFT_VISIBLE_RADIUS = 1600;
