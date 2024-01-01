@@ -1,9 +1,10 @@
-const esbuild = require("esbuild");
-const { aliasPath } = require("esbuild-plugin-alias-path");
-const { nodeExternalsPlugin } = require("esbuild-node-externals");
+import esbuild from 'esbuild';
+import { aliasPath } from 'esbuild-plugin-alias-path';
+import { nodeExternalsPlugin } from 'esbuild-node-externals';
+import eslint from 'esbuild-plugin-eslint';
 
 const production =
-  process.argv.findIndex((argItem) => argItem === "--mode=production") >= 0;
+  process.argv.findIndex((argItem) => argItem === '--mode=production') >= 0;
 
 const onRebuild = (context) => {
   return async (err, res) => {
@@ -16,23 +17,23 @@ const onRebuild = (context) => {
 };
 
 const alias = {
-  "@shared/*": "./src/shared",
+  '@shared/*': './src/shared',
 };
 
 const server = {
-  platform: "node",
-  target: ["node16"],
-  format: "cjs",
+  platform: 'node',
+  target: ['node16'],
+  format: 'cjs',
 };
 
 const client = {
-  platform: "browser",
-  target: ["chrome93"],
-  format: "iife",
+  platform: 'browser',
+  target: ['chrome93'],
+  format: 'iife',
   minify: true,
 };
 
-for (const context of ["client", "server"]) {
+for (const context of ['client', 'server']) {
   esbuild
     .build({
       plugins: [
@@ -42,7 +43,8 @@ for (const context of ["client", "server"]) {
             [`@${context}/*`]: `./src/${context}`,
           },
         }),
-        ...(context === "server" ? [nodeExternalsPlugin()] : []),
+        ...(context === 'server' ? [nodeExternalsPlugin()] : []),
+        eslint({}),
       ],
       bundle: true,
       entryPoints: [`src/${context}/${context}.ts`],
@@ -52,7 +54,7 @@ for (const context of ["client", "server"]) {
         : {
             onRebuild: onRebuild(context),
           },
-      ...(context === "client" ? client : server),
+      ...(context === 'client' ? client : server),
     })
     .then(() => console.log(`[${context}]: Built successfully!`))
     .catch(() => process.exit(1));

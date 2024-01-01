@@ -5,17 +5,30 @@
   "author": "BursztyneK98",
   "license": "MIT",
   "scripts": {
-    "build": "node build.js --mode=production",
-    "watch": "node build.js",
+    "build": "node build.mjs --mode=production",
+    "watch": "node build.mjs",
     "prettier:check": "npx prettier ./src/ --check",
-    "prettier:write": "npx prettier ./src/ --write"
+    "prettier:write": "npx prettier ./src/ --write",
+    "eslint:check": "npx eslint ./src/ --ext .ts",
+    "eslint:write": "npx eslint ./src/ --ext .ts --fix"
   },
   "devDependencies": {
     "@citizenfx/client": "latest",
     "@citizenfx/server": "latest",
     "@types/node": "^16.3.1",
+    "@typescript-eslint/eslint-plugin": "^5.13.0",
+    "@typescript-eslint/parser": "^5.62.0",
     "esbuild": "^0.14.10",
-    "prettier": "3.1.1"
+    "esbuild-plugin-eslint": "^0.3.7",
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-airbnb-typescript": "^17.1.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.25.3",
+    "eslint-plugin-prettier": "^4.0.0",
+    "prettier": "3.1.1",
+    "typescript": "5.1.6"
   },
   "dependencies": {
     "esbuild-node-externals": "^1.12.0",
