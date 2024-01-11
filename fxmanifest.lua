@@ -11,9 +11,11 @@ fxdk_build_command 'yarn' { 'build' }
 
 client_scripts {
   'dist/client.js',
-  'cl_example.lua'
+  'example/client/notification.lua',
+  'example/client/target.lua',
+  'example/client/blip.lua'
 }
 server_scripts {
   'dist/server.js',
-  'sv_example.lua'
+  'example/server/main.lua'
 }
