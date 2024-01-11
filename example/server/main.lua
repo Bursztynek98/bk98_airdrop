@@ -1,4 +1,15 @@
 RegisterCommand("AirDrop", function()
+  local stash = exports.ox_inventory:CreateTemporaryStash({
+    label = 'AirDrop',
+    slots = 50,
+    maxWeight = 500000,
+    items = {
+      { 'WEAPON_MINISMG', 1 },
+      { 'ammo-9',         69 },
+      { 'water',          2, { label = 'Mineral water' } }
+    }
+  })
+
   -- Create AirDrop
   local id = exports.bk98_airdrop:ADD_DROP(
   -- cord X, Y
@@ -18,7 +29,7 @@ RegisterCommand("AirDrop", function()
       --z?: number;
     },
     -- metaData, any data
-    { meta = 'hello world' }
+    { meta = 'hello world', stash = stash }
 
   -- Distance to spawn AirCraft
   --distance = 6000,

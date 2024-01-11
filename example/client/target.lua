@@ -20,14 +20,20 @@ do
     end
     -- By metadata you can add option to open airDrop for only specificated job
     -- data.metaData
+    if (not data.metaData.stash) then
+      return
+    end
 
     propCahe[data.id] = data.object
     print('Add Target ' .. data.id)
-    -- exports.ox_target:addLocalEntity(data.object, {
-    --   label = 'Open AirDrop',
-    --   name = data.id,
-    --   -- ADD EVENT FOR OPEN INVENTORY
-    -- })
+
+    exports.ox_target:addLocalEntity(data.object, {
+      label = 'Open AirDrop',
+      name = data.id,
+      onSelect = function()
+        ox_inventory:openInventory('stash', data.metaData.stash)
+      end
+    })
   end
 
   AddEventHandler(baseEvent .. ":" .. propEvent .. ":" .. 'SPAWN', CreateTarget)
@@ -40,7 +46,7 @@ do
       return
     end
     print('Remove Target ' .. data.id)
-    --exports.ox_target:removeLocalEntity(propCahe[data.id])
+    exports.ox_target:removeLocalEntity(propCahe[data.id])
     propCahe[data.id] = nil
   end)
 end
