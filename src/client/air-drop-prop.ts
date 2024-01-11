@@ -168,7 +168,7 @@ export class AirDropProp {
       1.0,
     );
     this.eventEmitter.emit(PROP_EVENT_NAME.SPAWN, {
-      object: this.objectHandler.Handle,
+      object: this.objectHandler?.Handle,
       parachute: this.parachuteHandler?.Handle,
       realFinish,
     });
@@ -183,7 +183,7 @@ export class AirDropProp {
     this.objectHandler && this.objectHandler.delete();
     this.parachuteHandler && this.parachuteHandler.delete();
     this.eventEmitter.emit(PROP_EVENT_NAME.DELETE, {
-      object: this.objectHandler.Handle,
+      object: this.objectHandler?.Handle,
       parachute: this.parachuteHandler?.Handle,
     });
     this.objectHandler = null;
@@ -234,7 +234,7 @@ export class AirDropProp {
           this.objectHandler?.Position?.distance(currentObjectCord) > 0.005)
       ) {
         this.eventEmitter.emit(PROP_EVENT_NAME.UPDATE_POSITION, {
-          object: this.objectHandler.Handle,
+          object: this.objectHandler?.Handle,
           parachute: this.parachuteHandler?.Handle,
           cord: [currentObjectCord.x, currentObjectCord.y, currentObjectCord.z],
           realFinish,
