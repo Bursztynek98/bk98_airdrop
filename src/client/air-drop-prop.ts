@@ -13,6 +13,8 @@ import { PROP_PARACHUTE_MODEL } from 'constant/prop-parachute-model.const';
 import { PROP_VISIBLE_RADIUS } from 'constant/prop-visible-radius.const';
 
 export class AirDropProp {
+  private isStarted = false;
+
   private drawBreak = false;
 
   private readonly drawChecker: DrawChecker;
@@ -104,7 +106,7 @@ export class AirDropProp {
     return false;
   }
 
-  private async spawn(position: Vector3) {
+  private async spawn(position: Vector3, realFinish: boolean) {
     if (this.objectHandlerExist) {
       return this.setPosition(position);
     }
@@ -169,6 +171,7 @@ export class AirDropProp {
       id: this.id,
       object: this.objectHandler.Handle,
       parachute: this.parachuteHandler?.Handle,
+      realFinish,
     });
     return null;
   }
@@ -205,12 +208,23 @@ export class AirDropProp {
   public async shouldDraw(playerCords: Vector3, currentNetworkTime: number) {
     try {
       if (this.drawChecker.netOffset(currentNetworkTime) < 0.0) return null;
-      const [shouldDraw, visibleFactor, currentObjectCord, finish] =
-        this.drawChecker.shouldDraw(
-          playerCords,
-          currentNetworkTime,
-          this.disappearTime,
-        );
+      const [
+        shouldDraw,
+        visibleFactor,
+        currentObjectCord,
+        finish,
+        realFinish,
+        started,
+      ] = this.drawChecker.shouldDraw(
+        playerCords,
+        currentNetworkTime,
+        this.disappearTime,
+      );
+
+      if (!this.isStarted && started) {
+        this.isStarted = true;
+        this.eventEmitter.emit(PROP_EVENT_NAME.START, { id: this.id });
+      }
 
       if (
         !this.objectHandlerExist ||
@@ -219,13 +233,14 @@ export class AirDropProp {
       ) {
         this.eventEmitter.emit(PROP_EVENT_NAME.UPDATE_POSITION, {
           id: this.id,
-          cord: currentObjectCord,
+          cord: [currentObjectCord.x, currentObjectCord.y, currentObjectCord.z],
+          realFinish,
         });
       }
       this.frameSkipper.frameToSkip =
         this.linearFunction.gatRound(visibleFactor);
       if (shouldDraw && !this.objectHandlerExist) {
-        await this.spawn(currentObjectCord);
+        await this.spawn(currentObjectCord, realFinish);
       } else if (!shouldDraw && this.objectHandlerExist) {
         this.delete();
       }

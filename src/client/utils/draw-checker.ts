@@ -11,7 +11,7 @@ export class DrawChecker {
   constructor(
     private readonly startPoint: Vector3,
     endPoint: Vector3,
-    startNetTime: number,
+    private readonly startNetTime: number,
     private readonly endNetTime: number,
     public readonly visibleRadius: number,
     private readonly stopOnFinish = false,
@@ -40,7 +40,14 @@ export class DrawChecker {
   }
 
   public finish(currentNetworkTime: number, extraEndNetTime?: number) {
-    return currentNetworkTime >= this.endNetTime + (extraEndNetTime || 0);
+    return {
+      finish: currentNetworkTime >= this.endNetTime + (extraEndNetTime || 0),
+      realFinish: currentNetworkTime >= this.endNetTime,
+    };
+  }
+
+  public started(currentNetworkTime: number) {
+    return currentNetworkTime >= this.startNetTime;
   }
 
   public shouldDraw(
@@ -52,16 +59,23 @@ export class DrawChecker {
     visibleFactor: number,
     currentObjectCord: Vector3,
     finish: boolean,
+    realFinish: boolean,
+    started: boolean,
   ] {
     const currentObjectCord = this.currentObjectCord(currentNetworkTime);
     const distance = playerCords.distance(currentObjectCord);
-    const finish = this.finish(currentNetworkTime, extraEndNetTime);
+    const { finish, realFinish } = this.finish(
+      currentNetworkTime,
+      extraEndNetTime,
+    );
 
     return [
       distance < this.visibleRadius,
       distance / this.visibleRadius,
       currentObjectCord,
       finish,
+      realFinish,
+      this.started(currentNetworkTime),
     ];
   }
 }

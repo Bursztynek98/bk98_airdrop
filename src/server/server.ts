@@ -42,10 +42,11 @@ function addDrop(
   const currentNetTime = netTimeInstance.networkTime;
   const flyTime = 1000 * (distance / (350 / 3.6));
   const netTime = currentNetTime + flyTime;
-  const finnishTimeout =
+  const finnishTimeout = Math.floor(
     flyTime +
-    1000 * ((height * 1) / (prop.speed || PROP_SPEED)) +
-    (prop.disappearTime || PROP_DISAPPEAR_TIME);
+      1000 * ((height * 1) / (prop.speed || PROP_SPEED)) +
+      (prop.disappearTime || PROP_DISAPPEAR_TIME),
+  );
   // Random number 60-240
   const dHeading = heading || Math.floor(Math.random() * 180) + 60;
   const theta = (dHeading / 180.0) * 3.14;
@@ -83,7 +84,7 @@ function addDrop(
   emitNet(`${SCRIPT_NAME}:CREATE`, -1, { ...drop, id });
   return id;
 }
-exp(`${SCRIPT_NAME}:ADD_DROP`, addDrop);
+exp(`ADD_DROP`, addDrop);
 
 function removeDrop(id: string) {
   if (airDrop.has(id)) {
@@ -91,44 +92,6 @@ function removeDrop(id: string) {
     emitNet(`${SCRIPT_NAME}:REMOVE`, -1, id);
   }
 }
-exp(`${SCRIPT_NAME}:REMOVE_DROP`, removeDrop);
+exp(`REMOVE_DROP`, removeDrop);
 
 Logger.log(`[${SCRIPT_NAME}] Server Resource Started`);
-
-RegisterCommand(
-  'c_airdrop',
-  async (source: string) => {
-    const [x, y] = GetEntityCoords(GetPlayerPed(source));
-
-    const id = addDrop(
-      [x, y],
-      {
-        model: 'cuban800',
-      },
-      {
-        model: 'prop_drop_armscrate_01b',
-      },
-      { siema: 123 },
-    );
-    Logger.log({ id });
-  },
-  false,
-);
-
-RegisterCommand(
-  's_airdrop',
-  async () => {
-    const id = addDrop(
-      [0.0, 0.0],
-      {
-        model: 'cuban800',
-      },
-      {
-        model: 'prop_drop_armscrate_01b',
-      },
-      { siema: 123 },
-    );
-    Logger.log({ id });
-  },
-  false,
-);

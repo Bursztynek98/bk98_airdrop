@@ -1,4 +1,4 @@
-import { Blip, Game, Vector3 } from 'fivem-js';
+import { Game, Vector3 } from 'fivem-js';
 import { AirDropAircraft } from 'air-drop-aircraft';
 import { AirDropProp } from 'air-drop-prop';
 import { GetZ } from 'utils/get-z';
@@ -202,28 +202,22 @@ class AirDrop {
       const netTime = this.timeSync.networkTime;
       const position = Game.PlayerPed.Position;
 
-      const asyncFn = [];
-
       // eslint-disable-next-line no-restricted-syntax
       for (const [id, value] of this.airDrop) {
-        asyncFn.push(async () => {
-          if (await value.aircraft?.shouldDraw(position, netTime)) {
-            value.aircraft?.flyToSky();
-            value.aircraft = null;
-          }
+        // eslint-disable-next-line no-await-in-loop
+        if (await value.aircraft?.shouldDraw(position, netTime)) {
+          value.aircraft?.flyToSky();
+          value.aircraft = null;
+        }
 
-          if (await value.prop?.shouldDraw(position, netTime)) {
-            value.prop?.delete();
-            value.prop = null;
-          }
+        // eslint-disable-next-line no-await-in-loop
+        if (await value.prop?.shouldDraw(position, netTime)) {
+          value.prop?.delete();
+          value.prop = null;
+        }
 
-          if (!value.aircraft && !value.prop) this.airDrop.delete(id);
-        });
+        if (!value.aircraft && !value.prop) this.airDrop.delete(id);
       }
-
-      await Promise.all(asyncFn).catch((e) => {
-        throw e;
-      });
     } catch (e) {
       Logger.warn(`setInterval error: ${e}`);
     }
@@ -238,30 +232,3 @@ async function boot() {
 }
 
 boot();
-
-// Object.keys(AIRCRAFT_EVENT_NAME).forEach((key) => {
-//   on(`${SCRIPT_NAME}:AIRCRAFT_EVENT_NAME:${key}`, (...args: any[]) => {
-//     console.log("AIRCRAFT_EVENT_NAME", key, args);
-//   });
-// });
-// Object.keys(PROP_EVENT_NAME).forEach((key) => {
-//   on(`${SCRIPT_NAME}:PROP_EVENT_NAME:${key}`, (...args: any[]) => {
-//     console.log("PROP_EVENT_NAME", key, args);
-//   });
-// });
-
-const bl = new Map<string, Blip>();
-
-on(
-  `${SCRIPT_NAME}:AIRCRAFT_EVENT_NAME:${AIRCRAFT_EVENT_NAME.UPDATE_POSITION}`,
-  ({ id, cord }: { id: string; cord: [number, number, number] }) => {
-    if (!bl.has(id)) {
-      const blip = new Blip(AddBlipForCoord(cord[0], cord[1], cord[2]));
-      bl.set(id, blip);
-      blip.Name = id;
-      return;
-    }
-    const blip = bl.get(id);
-    blip.Position = new Vector3(cord[0], cord[1], cord[2]);
-  },
-);

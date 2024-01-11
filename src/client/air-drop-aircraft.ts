@@ -11,6 +11,8 @@ import { AIRCRAFT_PILOT_MODEL } from 'constant/aircraft-pilot-model.const';
 import { AIRCRAFT_VISIBLE_RADIUS } from 'constant/aircraft-visible-radius.const';
 
 export class AirDropAircraft {
+  private isStarted = false;
+
   private readonly drawChecker: DrawChecker;
 
   private readonly eventEmitter: EventEmitter2;
@@ -85,7 +87,11 @@ export class AirDropAircraft {
     rotation && SetEntityHeading(this.objectHandler, rotation);
   }
 
-  private async spawn(position: Vector3, rotation?: number) {
+  private async spawn(
+    position: Vector3,
+    rotation?: number,
+    realFinish?: boolean,
+  ) {
     if (this.objectHandlerExist) {
       this.setPosition(position, rotation);
       return;
@@ -142,6 +148,7 @@ export class AirDropAircraft {
       id: this.id,
       vehicle: this.objectHandler,
       ped: this.pilotHandler,
+      realFinish,
     });
   }
 
@@ -198,17 +205,37 @@ export class AirDropAircraft {
   // Call every second
   public async shouldDraw(playerCords: Vector3, currentNetworkTime: number) {
     try {
-      const [shouldDraw, visibleFactor, currentObjectCord, finish] =
-        this.drawChecker.shouldDraw(playerCords, currentNetworkTime, 1000 * 5);
+      const [
+        shouldDraw,
+        visibleFactor,
+        currentObjectCord,
+        finish,
+        realFinish,
+        started,
+      ] = this.drawChecker.shouldDraw(
+        playerCords,
+        currentNetworkTime,
+        1000 * 5,
+      );
+
+      if (!this.isStarted && started) {
+        this.isStarted = true;
+        this.eventEmitter.emit(AIRCRAFT_EVENT_NAME.START, { id: this.id });
+      }
 
       this.eventEmitter.emit(AIRCRAFT_EVENT_NAME.UPDATE_POSITION, {
         id: this.id,
         cord: [currentObjectCord.x, currentObjectCord.y, currentObjectCord.z],
+        realFinish,
       });
       this.frameSkipper.frameToSkip =
         this.linearFunction.gatRound(visibleFactor);
       if (shouldDraw && !this.objectHandlerExist) {
-        await this.spawn(currentObjectCord, this.drawChecker.heading);
+        await this.spawn(
+          currentObjectCord,
+          this.drawChecker.heading,
+          realFinish,
+        );
       } else if (!shouldDraw && this.objectHandlerExist) {
         this.delete();
       }
