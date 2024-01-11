@@ -94,7 +94,11 @@ class AirDrop {
     });
   }
 
-  private async emit(eventName: string, id: string, args: Record<string, any>) {
+  private async emit(
+    eventName: string,
+    id: string,
+    args?: Record<string, any>,
+  ) {
     const metaData = this.airDrop.get(id)?.metaData;
     TriggerEvent(`${SCRIPT_NAME}:${eventName}`, { ...args, id, metaData });
   }
@@ -149,15 +153,15 @@ class AirDrop {
 
     const a = this.airDrop.get(id).aircraft;
     Object.keys(AIRCRAFT_EVENT_NAME).forEach((key) => {
-      a.on(key, (args: { id: string } & Record<string, any>) => {
-        this.emit(`AIRCRAFT_EVENT_NAME:${key}`, args.id, args);
+      a.on(key, (args?: Record<string, any>) => {
+        this.emit(`AIRCRAFT_EVENT_NAME:${key}`, id, args);
       });
     });
 
     const p = this.airDrop.get(id).prop;
     Object.keys(PROP_EVENT_NAME).forEach((key) => {
-      p.on(key, (args: { id: string } & Record<string, any>) => {
-        this.emit(`PROP_EVENT_NAME:${key}`, args.id, args);
+      p.on(key, (args?: Record<string, any>) => {
+        this.emit(`PROP_EVENT_NAME:${key}`, id, args);
       });
     });
 

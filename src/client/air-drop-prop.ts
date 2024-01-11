@@ -168,7 +168,6 @@ export class AirDropProp {
       1.0,
     );
     this.eventEmitter.emit(PROP_EVENT_NAME.SPAWN, {
-      id: this.id,
       object: this.objectHandler.Handle,
       parachute: this.parachuteHandler?.Handle,
       realFinish,
@@ -183,9 +182,12 @@ export class AirDropProp {
   public delete() {
     this.objectHandler && this.objectHandler.delete();
     this.parachuteHandler && this.parachuteHandler.delete();
+    this.eventEmitter.emit(PROP_EVENT_NAME.DELETE, {
+      object: this.objectHandler.Handle,
+      parachute: this.parachuteHandler?.Handle,
+    });
     this.objectHandler = null;
     this.parachuteHandler = null;
-    this.eventEmitter.emit(PROP_EVENT_NAME.DELETE, { id: this.id });
   }
 
   // call every tick
@@ -223,7 +225,7 @@ export class AirDropProp {
 
       if (!this.isStarted && started) {
         this.isStarted = true;
-        this.eventEmitter.emit(PROP_EVENT_NAME.START, { id: this.id });
+        this.eventEmitter.emit(PROP_EVENT_NAME.START);
       }
 
       if (
@@ -232,7 +234,8 @@ export class AirDropProp {
           this.objectHandler?.Position?.distance(currentObjectCord) > 0.005)
       ) {
         this.eventEmitter.emit(PROP_EVENT_NAME.UPDATE_POSITION, {
-          id: this.id,
+          object: this.objectHandler.Handle,
+          parachute: this.parachuteHandler?.Handle,
           cord: [currentObjectCord.x, currentObjectCord.y, currentObjectCord.z],
           realFinish,
         });

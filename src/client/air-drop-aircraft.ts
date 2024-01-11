@@ -145,7 +145,6 @@ export class AirDropAircraft {
     );
 
     this.eventEmitter.emit(AIRCRAFT_EVENT_NAME.SPAWN, {
-      id: this.id,
       vehicle: this.objectHandler,
       ped: this.pilotHandler,
       realFinish,
@@ -181,9 +180,12 @@ export class AirDropAircraft {
   public delete() {
     this.objectHandler && DeleteEntity(this.objectHandler);
     this.pilotHandler && DeleteEntity(this.pilotHandler);
+    this.eventEmitter.emit(AIRCRAFT_EVENT_NAME.DELETE, {
+      vehicle: this.objectHandler,
+      ped: this.pilotHandler,
+    });
     this.objectHandler = null;
     this.pilotHandler = null;
-    this.eventEmitter.emit(AIRCRAFT_EVENT_NAME.DELETE, { id: this.id });
   }
 
   // call every tick
@@ -220,11 +222,12 @@ export class AirDropAircraft {
 
       if (!this.isStarted && started) {
         this.isStarted = true;
-        this.eventEmitter.emit(AIRCRAFT_EVENT_NAME.START, { id: this.id });
+        this.eventEmitter.emit(AIRCRAFT_EVENT_NAME.START);
       }
 
       this.eventEmitter.emit(AIRCRAFT_EVENT_NAME.UPDATE_POSITION, {
-        id: this.id,
+        vehicle: this.objectHandler,
+        ped: this.pilotHandler,
         cord: [currentObjectCord.x, currentObjectCord.y, currentObjectCord.z],
         realFinish,
       });
