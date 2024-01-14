@@ -15,6 +15,8 @@ import { PROP_VISIBLE_RADIUS } from 'constant/prop-visible-radius.const';
 export class AirDropProp {
   private isStarted = false;
 
+  private isEnded = false;
+
   private drawBreak = false;
 
   private readonly drawChecker: DrawChecker;
@@ -246,6 +248,10 @@ export class AirDropProp {
         await this.spawn(currentObjectCord, realFinish);
       } else if (!shouldDraw && this.objectHandlerExist) {
         this.delete();
+      }
+
+      if (finish && !this.isEnded) {
+        this.eventEmitter.emit(PROP_EVENT_NAME.END);
       }
 
       return finish;

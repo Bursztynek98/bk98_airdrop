@@ -13,6 +13,8 @@ import { AIRCRAFT_VISIBLE_RADIUS } from 'constant/aircraft-visible-radius.const'
 export class AirDropAircraft {
   private isStarted = false;
 
+  private isEnded = false;
+
   private readonly drawChecker: DrawChecker;
 
   private readonly eventEmitter: EventEmitter2;
@@ -241,6 +243,10 @@ export class AirDropAircraft {
         );
       } else if (!shouldDraw && this.objectHandlerExist) {
         this.delete();
+      }
+
+      if (finish && !this.isEnded) {
+        this.eventEmitter.emit(AIRCRAFT_EVENT_NAME.END);
       }
 
       return finish;
