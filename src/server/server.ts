@@ -77,19 +77,25 @@ function addDrop(
   });
 
   setTimeout(() => {
-    airDrop.has(id) && airDrop.delete(id);
+    const drop = airDrop.get(id);
+    if (!drop) return;
+    TriggerEvent(`${SCRIPT_NAME}:END`, { ...drop, id });
+    airDrop.delete(id);
   }, finnishTimeout);
 
   const drop = airDrop.get(id);
   emitNet(`${SCRIPT_NAME}:CREATE`, -1, { ...drop, id });
+  TriggerEvent(`${SCRIPT_NAME}:CREATE`, { ...drop, id });
   return id;
 }
 exp(`ADD_DROP`, addDrop);
 
 function removeDrop(id: string) {
-  if (airDrop.has(id)) {
-    airDrop.delete(id);
+  const drop = airDrop.get(id);
+  if (drop) {
     emitNet(`${SCRIPT_NAME}:REMOVE`, -1, id);
+    TriggerEvent(`${SCRIPT_NAME}:REMOVE`, { ...drop, id });
+    airDrop.delete(id);
   }
 }
 exp(`REMOVE_DROP`, removeDrop);
